@@ -1,11 +1,17 @@
+import base64
 from typing import Any
 
+import cv2
+from fastapi import APIRouter, HTTPException, Body
 import joblib
-from core.errors import PredictException
-from fastapi import APIRouter, HTTPException
 from loguru import logger
-from models.prediction import HealthResponse, MachineLearningResponse
+
+from core.errors import PredictException
+from helpers import string_to_image
+from models.prediction import HealthResponse, MachineLearningResponse, Stickman
 from services.predict import MachineLearningModelHandlerScore as model
+from services.stickman import Stick
+
 
 router = APIRouter()
 
@@ -26,6 +32,25 @@ async def predict(data_input: Any = None):
 
     return MachineLearningResponse(prediction=prediction)
 
+@router.post("/stickman")
+async def stickman(stickman: Stickman):
+    if not stickman:
+        raise HTTPException(status_code=404, detail=f"'data_input' argument invalid!")
+    try:
+        data_input = stickman.data_input
+        pil_img = string_to_image(data_input)
+        stick = Stick()
+        stick.get_image(pil_img)
+        await stick.process()
+        string = base64.b64encode(cv2.imencode('.jpg', stick.output)[1]).decode()
+        
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=f"Exception: {e}")
+
+    return {
+        string
+    }
 
 @router.get(
     "/health", response_model=HealthResponse, name="health:get-data",
