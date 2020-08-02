@@ -2,6 +2,12 @@
 
 doodle game
 
+## Quick run with docker-compose
+
+```
+docker-compose up
+```
+
 ## Development Requirements
 
 - Python3.8.2
