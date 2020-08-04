@@ -1,30 +1,60 @@
+import base64
 from typing import Any
 
+import cv2
+from fastapi import APIRouter, HTTPException, Body
 import joblib
-from core.errors import PredictException
-from fastapi import APIRouter, HTTPException
 from loguru import logger
-from models.prediction import HealthResponse, MachineLearningResponse
-from services.predict import MachineLearningModelHandlerScore as model
+
+from core.errors import PredictException
+from helpers import string_to_image
+from models.prediction import HealthResponse, MachineLearningResponse, Stickman, DoodleResponse
+from services.stickman import Stick
+from services.mobilenet import model
+
 
 router = APIRouter()
 
-# TODO: Change 'load_wrapper' and 'method'  based on your model.pkl.
-get_prediction = lambda data_input: MachineLearningResponse(
-    model.predict(data_input, load_wrapper=joblib.load, method="predict_proba")
-)
+
+# @router.post("/stickman")
+# async def stickman(stickman: Stickman):
+#     if not stickman:
+#         raise HTTPException(
+#             status_code=404, detail=f"'data_input' argument invalid!")
+#     try:
+#         data_input = stickman.data_input
+#         img = string_to_image(data_input)
+#         stick = Stick()
+#         stick.get_image(img)
+#         await stick.process()
+#         string = base64.b64encode(cv2.imencode(
+#             '.jpg', stick.output)[1]).decode()
+
+#     except Exception as e:
+#         print(e)
+#         raise HTTPException(status_code=500, detail=f"Exception: {e}")
+
+#     return {
+#         string
+#     }
 
 
-@router.get("/predict", response_model=MachineLearningResponse, name="predict:get-data")
-async def predict(data_input: Any = None):
-    if not data_input:
-        raise HTTPException(status_code=404, detail=f"'data_input' argument invalid!")
+@router.post("/predict")
+async def predict(doodle: Stickman):
+    if not doodle:
+        raise HTTPException(
+            status_code=404, detail=f"'data_input' argument invalid!")
     try:
-        prediction = get_prediction(data_input)
+        data_input = doodle.data_input
+        img = string_to_image(data_input)
+
+        result, confident = model.predict(img)
+
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Exception: {e}")
 
-    return MachineLearningResponse(prediction=prediction)
+    return DoodleResponse(result=result, confident=confident)
 
 
 @router.get(

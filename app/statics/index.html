@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple example</title>
+    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+    <style type='text/css'>
+        #sheet {
+            border: 1px solid black;
+        }
+    </style>
+    <script type='text/javascript' src="scripts.js">
+    </script>
+</head>
+
+<body>
+    <canvas id="sheet" width="400" height="400"></canvas>
+    <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+    <h3 id="result"></h3>
+    <input type="button" value="Predict" id="btn" size="30" onclick="save()">
+    <input type="button" value="Clear" id="clr" size="23" onclick="erase()">
+</body>
+
+</html>
