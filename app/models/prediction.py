@@ -9,5 +9,11 @@ class MachineLearningResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: bool
 
+
 class Stickman(BaseModel):
     data_input: str
+
+
+class DoodleResponse(BaseModel):
+    result: str
+    confident: float
