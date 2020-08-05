@@ -1,6 +1,7 @@
 # Doodler
 
 doodle game
+Check out a live version at http://doodler-api.herokuapp.com
 
 ## Quick run with docker-compose
 
