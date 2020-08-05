@@ -21,8 +21,8 @@ def get_application() -> FastAPI:
     application.include_router(api_router, prefix=API_PREFIX)
     pre_load = False
     model.load_model()
+    print('model , warming up ...')
     model.warm_up()
-    print('model loaded')
     if pre_load:
         application.add_event_handler(
             "startup", create_start_app_handler(application))
