@@ -1,4 +1,6 @@
 
 build:
     docker:
-        doodler: Dockerfile
+        web: Dockerfile
+run:
+    web: python app/main.py

@@ -2,7 +2,7 @@ import os
 
 import uvicorn
 from api.routes.api import router as api_router
-from core.config import API_PREFIX, DEBUG, PROJECT_NAME, VERSION
+from core.config import API_PREFIX, DEBUG, PROJECT_NAME, VERSION, PORT
 from core.events import create_start_app_handler
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -21,8 +21,8 @@ def get_application() -> FastAPI:
     application.include_router(api_router, prefix=API_PREFIX)
     pre_load = False
     model.load_model()
+    print('model , warming up ...')
     model.warm_up()
-    print('model loaded')
     if pre_load:
         application.add_event_handler(
             "startup", create_start_app_handler(application))
@@ -40,4 +40,4 @@ async def redirect():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0",
-                port=8080, reload=DEBUG, debug=DEBUG)
+                port=PORT, reload=DEBUG, debug=DEBUG)
